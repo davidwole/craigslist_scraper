@@ -48,7 +48,7 @@ async function scrapeData(url) {
           const postedTime = new Date(result.posted);
           const timeDifference = (currentTime - postedTime) / (1000 * 60); // Difference in minutes
   
-          return timeDifference < 8 * 60; // Less than 8 hours
+          return timeDifference < 0.2 * 60; // Less than 5 minutes
       });
   
       const keywordFilteredResults = filteredResults?.filter(result => {

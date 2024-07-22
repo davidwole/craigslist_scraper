@@ -1,5 +1,6 @@
 // Import required modules
 const http = require('http');
+const { tester } = require('./test');
 
 // Define the port to listen on
 const PORT = process.env.PORT || 3000;
@@ -8,7 +9,8 @@ const PORT = process.env.PORT || 3000;
 function handleRootRequest(req, res) {
     console.log('Request received at /');
     res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('Hello, World!');
+    tester();
+    res.end();
 }
 
 // Create an HTTP server

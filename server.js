@@ -8,7 +8,7 @@ const {
 // Define the port to listen on
 const PORT = process.env.PORT || 3000;
 // Define your function to be called
-function handleRootRequest async(req, res) {
+function handleRootRequest (req, res) {
     console.log('Request received at /');
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     tester();

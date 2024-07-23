@@ -133,3 +133,8 @@ scrapeMultipleUrls(urls).then(results => {
 }).catch(err => {
     console.error('Error:', err);
 });
+
+module.exports = {
+    urls,
+    scrapeMultipleUrls
+}

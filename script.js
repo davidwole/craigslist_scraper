@@ -139,11 +139,11 @@ const urls = [
     // Add more URLs here
 ];
 
-scrapeMultipleUrls(urls).then(results => {
-    console.log(JSON.stringify(results, null, 2));
-}).catch(err => {
-    console.error('Error:', err);
-});
+// scrapeMultipleUrls(urls).then(results => {
+  //  console.log(JSON.stringify(results, null, 2));
+// }).catch(err => {
+   // console.error('Error:', err);
+//});
 
 module.exports = {
     urls,

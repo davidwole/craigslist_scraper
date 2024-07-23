@@ -1,7 +1,10 @@
 // Import required modules
 const http = require('http');
 const { tester } = require('./test');
-
+const {
+    urls,
+    scrapeMultipleUrls
+} = require('./script')
 // Define the port to listen on
 const PORT = process.env.PORT || 3000;
 const {

@@ -1,6 +1,5 @@
 // Import required modules
 const http = require('http');
-const { tester } = require('./test');
 const {
     urls,
     scrapeMultipleUrls
@@ -11,7 +10,6 @@ const PORT = process.env.PORT || 3000;
 function handleRootRequest (req, res) {
     console.log('Request received at /');
     res.writeHead(200, { 'Content-Type': 'text/plain' });
-    tester();
     scrapeMultipleUrls(urls)
     res.end();
 }

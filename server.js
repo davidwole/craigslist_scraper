@@ -11,7 +11,9 @@ function handleRootRequest (req, res) {
     console.log('Request received at /');
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     scrapeMultipleUrls(urls)
-    setInterval(scrapeMultipleUrls(urls), 5 * 60 * 1000);
+    setInterval(function() {
+    scrapeMultipleUrls(urls);
+}, 5 * 60 * 1000);
     res.end();
 }
 

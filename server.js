@@ -4,7 +4,10 @@ const { tester } = require('./test');
 
 // Define the port to listen on
 const PORT = process.env.PORT || 3000;
-
+const {
+    urls,
+    scrapeMultipleUrls
+} = require('./script')
 // Define your function to be called
 function handleRootRequest(req, res) {
     console.log('Request received at /');

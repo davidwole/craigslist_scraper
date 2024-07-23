@@ -12,10 +12,11 @@ const {
     scrapeMultipleUrls
 } = require('./script')
 // Define your function to be called
-function handleRootRequest(req, res) {
+function handleRootRequest async(req, res) {
     console.log('Request received at /');
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     tester();
+    scrapeMultipleUrls(urls)
     res.end();
 }
 

@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
 });
 
 async function scrapeData(url) {
-  const browser = await puppeteer.launch({ headless: false,
+  const browser = await puppeteer.launch({
   args: [
     "--disable-setuid-sandbox",
     "--no-sandbox",

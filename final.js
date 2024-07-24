@@ -3,7 +3,7 @@ const nodemailer = require('nodemailer');
 const dotenv = require('dotenv').config();
 const { timeAgo } = require('./utils/time');
 const { keywords } = require('./utils/keywords');
-const { checkPostRelated, checkPostAI } = require('./ai');
+
 
 // Configure your email transport options
 const transporter = nodemailer.createTransport({
@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
 const link = 'https://sfbay.craigslist.org/search/eby/cpg#search=1~list~0~0';
 
 async function scrapeData(url) {;
-  const browser = await puppeteer.launch({ 
+  const browser = await puppeteer.launch({ headless: true,
   args: [
     "--disable-setuid-sandbox",
     "--no-sandbox",
@@ -32,7 +32,7 @@ async function scrapeData(url) {;
 
   const page = await browser.newPage();
     
-  await page.goto(url);
+  await page.goto(url, {timeout: 0});
 
   await new Promise(resolve => setTimeout(resolve, 5000));
 
@@ -67,7 +67,7 @@ async function scrapeData(url) {;
   let bodyFilteredResults = [];
 
   for(result of filteredResults){
-    await page.goto(result?.link);
+    await page.goto(result?.link, {timeout: 0});
 
     const postingBody = await page.evaluate(() => {
       return document.querySelector('#postingbody')?.innerText;
@@ -78,31 +78,23 @@ async function scrapeData(url) {;
     bodyFilteredResults.push(result);
   }
 
-  // const aiFilteredResults = bodyFilteredResults.filter(item => checkPostAI(item.body));
-  const aiFilteredResults = [];
+ 
 
-  for(i of bodyFilteredResults){
-    const final = checkPostAI(i.body);
-    aiFilteredResults.push(final);
+  for(result of bodyFilteredResults){
+    const mailOptions = {
+      from: process.env.EMAIL_USER, // Sender address
+      to: process.env.RECEIVER_EMAIL, // List of recipients
+      subject: `Lead found: ${result.title}`, // Subject line
+      text: `Title: ${result.title}\n\nDescription: \n${result.body}\n\nPosted ${timeAgo(result.posted)}\n\n${result.link}` // Email body
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log(`Email sent: ${result.title}`);
+    } catch (error) {
+      console.error(`Error sending email for ${result.title}:`, error);
+    }
   }
-
-  console.log(aiFilteredResults)
-
-  // for(result of aiFilteredResults){
-  //   const mailOptions = {
-  //     from: process.env.EMAIL_USER, // Sender address
-  //     to: process.env.RECEIVER_EMAIL, // List of recipients
-  //     subject: `Lead found: ${result.title}`, // Subject line
-  //     text: `Title: ${result.title}\n\nDescription: \n${result.body}\n\nPosted ${timeAgo(result.posted)}\n\n${result.link}` // Email body
-  //   };
-
-  //   try {
-  //     await transporter.sendMail(mailOptions);
-  //     console.log(`Email sent: ${result.title}`);
-  //   } catch (error) {
-  //     console.error(`Error sending email for ${result.title}:`, error);
-  //   }
-  // }
 
   await browser?.close();
 }  

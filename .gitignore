@@ -1,0 +1,4 @@
+/node_modules
+.env
+trash.js
+obj.js

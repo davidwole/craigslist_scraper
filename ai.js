@@ -3,15 +3,24 @@ const dotenv = require('dotenv').config();
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
-
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
-async function run() {
-  const prompt = "Write a story about an AI and magic"
+
+const { dummy } = require('./obj');
+
+
+async function checkPostRelated(body) {
+  const prompt = `Does the following post state that is looking for a freelance web designer, web developer, graphic designer, or 3D artist? If yes just replay "true" if not reply "false": ${body}`;
 
   const result = await model.generateContent(prompt);
   const response = await result.response;
-  const text = response.text();
-  console.log(text);
+  const text =  response.text();
+
+  return text;
 }
 
-run();
+
+console.log(response);
+
+module.exports = {
+  checkPostRelated,
+}

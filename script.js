@@ -2,9 +2,10 @@ const puppeteer = require('puppeteer');
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv').config();
 const { timeAgo } = require('./utils/time');
-const { keywords } = require('./utils/keywords');
+const { 
+  checkPostsRelated
+} = require('./ai');
 
-// Configure your email transport options
 const transporter = nodemailer.createTransport({
   service: 'yahoo', // Use your email service (e.g., 'gmail', 'outlook', etc.)
   auth: {
@@ -13,9 +14,15 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+const urls = [
+  'https://newjersey.craigslist.org/search/paterson-nj/cpg?lat=40.91&lon=-74.174&search_distance=1000#search=1~list~0~0',
+  'https://wyoming.craigslist.org/search/boulder-wy/cpg?lat=42.7589&lon=-109.2776&search_distance=1000#search=1~list~0~0',
+  'https://newjersey.craigslist.org/search/paterson-nj/crg?lat=40.91&lon=-74.174&search_distance=1000#search=1~list~0~0',
+  'https://wyoming.craigslist.org/search/boulder-wy/crg?lat=42.7589&lon=-109.2776&search_distance=1000#search=1~list~0~0'
+];
+
 async function scrapeData(url) {
-  console.log(`Scraper running for ${url}`);
-  const browser = await puppeteer.launch({
+  const browser = await puppeteer.launch({ 
   args: [
     "--disable-setuid-sandbox",
     "--no-sandbox",
@@ -61,7 +68,7 @@ try{
       const postedTime = new Date(result.posted);
       const timeDifference = (currentTime - postedTime) / (1000 * 60); // Difference in minutes
 
-      return timeDifference < 60 * 1; 
+      return timeDifference < 60 * 2; 
   });
   
   let bodyFilteredResults = [];
@@ -78,60 +85,53 @@ try{
     bodyFilteredResults.push(result);
   }
 
-  if(bodyFilteredResults && bodyFilteredResults.length > 0){
+  checkPostsRelated(bodyFilteredResults)
+  .then(processedPosts => {
+    const aiFilteredResults = processedPosts.filter(data => data.relevant === true);
 
-    for(result of bodyFilteredResults){
+    for (const result of aiFilteredResults) {
       const mailOptions = {
-        from: process.env.EMAIL_USER, // Sender address
-        to: process.env.RECEIVER_EMAIL, // List of recipients
-        subject: `Lead found: ${result.title}`, // Subject line
-        text: `Title: ${result.title}\n\nDescription: \n${result.body}\n\nPosted ${timeAgo(result.posted)}\n\n${result.link}` // Email body
+        from: process.env.EMAIL_USER,
+        to: process.env.RECEIVER_EMAIL,
+        subject: `Lead found: ${result.title}`,
+        text: `Title: ${result.title}\n\nDescription: \n${result.body}\n\nPosted ${timeAgo(result.posted)}\n\n${result.link}`
       };
-  
+
       try {
-        await transporter.sendMail(mailOptions);
-        console.log(`Email sent: ${result.title}`);
+        transporter.sendMail(mailOptions)
+          .then(() => console.log(`Email sent: ${result.title}`))
+          .catch(error => console.error(`Error sending email for ${result.title}:`, error));
       } catch (error) {
-        console.error(`Error sending email for ${result.title}:`, error);
+        console.error('Error during email sending:', error);
       }
     }
-  }
+  })
+  .catch(error => {
+    console.error('Overall error:', error);
+  });
+
 } catch(error){
   console.error(error)
 } finally {
   await browser?.close();
 }
 
-}  
+} 
 
-async function scrapeMultipleUrls(links) {
-  console.log(`Scrape operation running`);
-  const allResults = [];
-  for (const url of urls) {
-    console.log(`Scrape operation running for ${url}`);
-      try {
-          const results = await scrapeData(url);
-          allResults.push(...results);
-      } catch (error) {
-          console.error(`Error scraping ${url}:`, error);
-      }
+async function scrapeAllData() {
+  try {
+    for (const url of urls) {
+      console.log(`Scraper running for ${url}`);
+      await scrapeData(url); // Wait for scraping to finish before moving on
+    }
+  } catch (error) {
+    console.error(error);
   }
-  return allResults;
 }
-
-
-const urls = [
-  'https://newjersey.craigslist.org/search/paterson-nj/cpg?lat=40.91&lon=-74.174&search_distance=1000#search=1~list~0~0',
-  'https://wyoming.craigslist.org/search/boulder-wy/cpg?lat=42.7589&lon=-109.2776&search_distance=1000#search=1~list~0~0',
-  'https://newjersey.craigslist.org/search/paterson-nj/crg?lat=40.91&lon=-74.174&search_distance=1000#search=1~list~0~0',
-  'https://wyoming.craigslist.org/search/boulder-wy/crg?lat=42.7589&lon=-109.2776&search_distance=1000#search=1~list~0~0'
-  // Add more URLs here
-];
 
 
 module.exports = {
   urls,
-  scrapeMultipleUrls,
-  scrapeData
+  scrapeAllData
 }
 

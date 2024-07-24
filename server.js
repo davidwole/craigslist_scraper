@@ -2,21 +2,20 @@
 const http = require('http');
 const {
     urls,
-    scrapeMultipleUrls,
-    scrapeData
+    scrapeAllData
+
 } = require('./script')
 // Define the port to listen on
 const PORT = process.env.PORT || 3000;
 // Define your function to be called
 function handleRootRequest (req, res) {
     console.log('Request received at /');
-    res.writeHead(200, { 'Content-Type': 'text/plain' });    
-    setInterval(function() {
-      scrapeData(urls[0]);
-      scrapeData(urls[1]);
-      scrapeData(urls[2]);
-      scrapeData(urls[3]);
-    }, 5 * 60 * 1000);
+    res.writeHead(200, { 'Content-Type': 'text/plain' });   
+    setInterval(() => {
+      scrapeAllData()
+        .then(() => console.log('Scraping for all URLs completed'))
+        .catch(error => console.error('Error during scraping:', error));
+    }, 7 * 60 * 1000);
     res.end('Scraper started');
 }
 

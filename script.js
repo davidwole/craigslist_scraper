@@ -68,7 +68,7 @@ try{
       const postedTime = new Date(result.posted);
       const timeDifference = (currentTime - postedTime) / (1000 * 60); // Difference in minutes
 
-      return timeDifference < 60 * 2; 
+      return timeDifference < 60 * .12; 
   });
   
   let bodyFilteredResults = [];

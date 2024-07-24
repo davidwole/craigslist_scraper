@@ -3,7 +3,6 @@ const nodemailer = require('nodemailer');
 const dotenv = require('dotenv').config();
 const { timeAgo } = require('./utils/time');
 const { keywords } = require('./utils/keywords');
-const { filterDataByRelatedPosts } = require('./ai');
 
 // Configure your email transport options
 const transporter = nodemailer.createTransport({
@@ -15,6 +14,7 @@ const transporter = nodemailer.createTransport({
 });
 
 async function scrapeData(url) {
+  console.log(`Scraper running for ${url}`);
   const browser = await puppeteer.launch({
   args: [
     "--disable-setuid-sandbox",
@@ -55,14 +55,13 @@ try{
       return data;
     });
 
-  console.log(results)
-  return;
+
   const currentTime = new Date();
   const filteredResults = results?.filter(result => {
       const postedTime = new Date(result.posted);
       const timeDifference = (currentTime - postedTime) / (1000 * 60); // Difference in minutes
 
-      return timeDifference < 60 * 0.12; 
+      return timeDifference < 60 * 1; 
   });
   
   let bodyFilteredResults = [];
@@ -79,20 +78,22 @@ try{
     bodyFilteredResults.push(result);
   }
 
+  if(bodyFilteredResults && bodyFilteredResults.length > 0){
 
-  for(result of bodyFilteredResults){
-    const mailOptions = {
-      from: process.env.EMAIL_USER, // Sender address
-      to: process.env.RECEIVER_EMAIL, // List of recipients
-      subject: `Lead found: ${result.title}`, // Subject line
-      text: `Title: ${result.title}\n\nDescription: \n${result.body}\n\nPosted ${timeAgo(result.posted)}\n\n${result.link}` // Email body
-    };
-
-    try {
-      await transporter.sendMail(mailOptions);
-      console.log(`Email sent: ${result.title}`);
-    } catch (error) {
-      console.error(`Error sending email for ${result.title}:`, error);
+    for(result of bodyFilteredResults){
+      const mailOptions = {
+        from: process.env.EMAIL_USER, // Sender address
+        to: process.env.RECEIVER_EMAIL, // List of recipients
+        subject: `Lead found: ${result.title}`, // Subject line
+        text: `Title: ${result.title}\n\nDescription: \n${result.body}\n\nPosted ${timeAgo(result.posted)}\n\n${result.link}` // Email body
+      };
+  
+      try {
+        await transporter.sendMail(mailOptions);
+        console.log(`Email sent: ${result.title}`);
+      } catch (error) {
+        console.error(`Error sending email for ${result.title}:`, error);
+      }
     }
   }
 } catch(error){
@@ -130,6 +131,7 @@ const urls = [
 
 module.exports = {
   urls,
-  scrapeMultipleUrls
+  scrapeMultipleUrls,
+  scrapeData
 }
 

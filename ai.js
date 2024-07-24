@@ -5,7 +5,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
 
-// const { webdata } = require('./obj');
+const { webdata } = require('./obj');
  
 
 async function checkPostRelated(body) {
@@ -22,31 +22,3 @@ async function checkPostRelated(body) {
   }
 }
 
-async function filterDataByRelatedPosts(data) {
-  const filteredData = [];
-  try {
-    
-    for (const item of data) {
-      const isRelated = await checkPostRelated(item.body);
-      if (isRelated) {
-        filteredData.push(item);
-      }
-    }
-  
-    return filteredData;
-  } catch (error) {
-    console.error(error);
-  }
-
-}
-
-// filterDataByRelatedPosts(webdata).then((res) => {
- 
-// }).catch((error) => {
-//   console.error(error)
-// })
-
-
-module.exports = {
-  filterDataByRelatedPosts
-}

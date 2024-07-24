@@ -3,6 +3,7 @@ const http = require('http');
 const {
     urls,
     scrapeMultipleUrls,
+    scrapeData
 } = require('./script')
 // Define the port to listen on
 const PORT = process.env.PORT || 3000;
@@ -10,9 +11,16 @@ const PORT = process.env.PORT || 3000;
 function handleRootRequest (req, res) {
     console.log('Request received at /');
     res.writeHead(200, { 'Content-Type': 'text/plain' });    
-    setInterval(function() {
-   scrapeMultipleUrls(urls);
-    }, 7 * 60 * 1000);
+    // setInterval(function() {
+    //   scrapeData(urls[0]);
+    //   scrapeData(urls[1]);
+    //   scrapeData(urls[2]);
+    //   scrapeData(urls[3]);
+    // }, 7 * 60 * 1000);
+    scrapeData(urls[0]);
+      scrapeData(urls[1]);
+      scrapeData(urls[2]);
+      scrapeData(urls[3]);
     res.end('Scraper started');
 }
 

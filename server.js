@@ -10,9 +10,9 @@ const PORT = process.env.PORT || 3000;
 function handleRootRequest (req, res) {
     console.log('Request received at /');
     res.writeHead(200, { 'Content-Type': 'text/plain' });    
-    setInterval(function() {
-    scrapeMultipleUrls(urls);
-    }, 7 * 60 * 1000);
+  //  setInterval(function() {
+  scrapeMultipleUrls(urls);
+  //  }, 7 * 60 * 1000);
     res.end();
 }
 

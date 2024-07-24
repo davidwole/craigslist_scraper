@@ -40,11 +40,11 @@ async function filterDataByRelatedPosts(data) {
 
 }
 
-filterDataByRelatedPosts(webdata).then((res) => {
+// filterDataByRelatedPosts(webdata).then((res) => {
  
-}).catch((error) => {
-  console.error(error)
-})
+// }).catch((error) => {
+//   console.error(error)
+// })
 
 
 module.exports = {

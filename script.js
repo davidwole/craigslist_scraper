@@ -3,6 +3,7 @@ const nodemailer = require('nodemailer');
 const dotenv = require('dotenv').config();
 const { timeAgo } = require('./utils/time');
 const { keywords } = require('./utils/keywords');
+const { filterDataByRelatedPosts } = require('./ai');
 
 // Configure your email transport options
 const transporter = nodemailer.createTransport({
@@ -13,7 +14,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-async function scrapeData(url) {;
+async function scrapeData(url) {
   const browser = await puppeteer.launch({
   args: [
     "--disable-setuid-sandbox",
@@ -26,6 +27,8 @@ async function scrapeData(url) {;
       ? process.env.PUPPETEER_EXECUTABLE_PATH
       : puppeteer.executablePath(),
 });
+
+try{
 
   const page = await browser.newPage();
     
@@ -58,7 +61,7 @@ async function scrapeData(url) {;
       const postedTime = new Date(result.posted);
       const timeDifference = (currentTime - postedTime) / (1000 * 60); // Difference in minutes
 
-      return timeDifference < 60 * 0.12; 
+      return timeDifference < 60; 
   });
   
   let bodyFilteredResults = [];
@@ -75,9 +78,12 @@ async function scrapeData(url) {;
     bodyFilteredResults.push(result);
   }
 
- 
+  let filteredDataArray;
+    filterDataByRelatedPosts(bodyFilteredResults).then(filteredData => {
+      filteredDataArray = filteredData;
+    });
 
-  for(result of bodyFilteredResults){
+  for(result of filteredDataArray){
     const mailOptions = {
       from: process.env.EMAIL_USER, // Sender address
       to: process.env.RECEIVER_EMAIL, // List of recipients
@@ -92,8 +98,12 @@ async function scrapeData(url) {;
       console.error(`Error sending email for ${result.title}:`, error);
     }
   }
-
+} catch(error){
+  console.error(error)
+} finally {
   await browser?.close();
+}
+
 }  
 
 

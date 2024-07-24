@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
 });
 
 async function scrapeData(url) {
-  const browser = await puppeteer.launch({
+  const browser = await puppeteer.launch({ headless: false,
   args: [
     "--disable-setuid-sandbox",
     "--no-sandbox",
@@ -61,7 +61,7 @@ try{
       const postedTime = new Date(result.posted);
       const timeDifference = (currentTime - postedTime) / (1000 * 60); // Difference in minutes
 
-      return timeDifference < 60 * 18; 
+      return timeDifference < 60 * 2; 
   });
   
   let bodyFilteredResults = [];
@@ -78,12 +78,8 @@ try{
     bodyFilteredResults.push(result);
   }
 
-  let filteredDataArray;
-    filterDataByRelatedPosts(bodyFilteredResults).then(filteredData => {
-      filteredDataArray = filteredData;
-    });
 
-  for(result of filteredDataArray){
+  for(result of bodyFilteredResults){
     const mailOptions = {
       from: process.env.EMAIL_USER, // Sender address
       to: process.env.RECEIVER_EMAIL, // List of recipients
@@ -106,8 +102,7 @@ try{
 
 }  
 
-
-async function scrapeMultipleUrls(urls) {
+async function scrapeMultipleUrls(links) {
   console.log(`Scrape operation running`);
   const allResults = [];
   for (const url of urls) {
@@ -121,6 +116,7 @@ async function scrapeMultipleUrls(urls) {
   }
   return allResults;
 }
+
 
 const urls = [
   'https://newjersey.craigslist.org/search/paterson-nj/cpg?lat=40.91&lon=-74.174&search_distance=1000#search=1~list~0~0',

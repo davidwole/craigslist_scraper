@@ -1,22 +1,17 @@
-const OpenAI = require('openai');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 const dotenv = require('dotenv').config();
 
-const openai = new OpenAI({
-  apiKey: process.env.OPEN_AI_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
-async function ai(){
-  const response = await openai.completions.create({
-    model: "gpt-3.5-turbo-instruct",
-    prompt: "How far is the moon",
-    temperature: 1,
-    max_tokens: 256,
-    top_p: 1,
-    frequency_penalty: 0,
-    presence_penalty: 0,
-  });
-  
-  console.log(response.choices[0]);
+
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
+async function run() {
+  const prompt = "Write a story about an AI and magic"
+
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  const text = response.text();
+  console.log(text);
 }
 
-ai();
+run();

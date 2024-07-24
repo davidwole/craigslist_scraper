@@ -1,8 +1,8 @@
 const puppeteer = require('puppeteer');
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv').config();
-const { timeAgo } = require('./time');
-const { keywords } = require('./keywords');
+const { timeAgo } = require('./utils/time');
+const { keywords } = require('./utils/keywords');
 
 // Configure your email transport options
 const transporter = nodemailer.createTransport({

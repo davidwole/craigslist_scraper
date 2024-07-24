@@ -55,7 +55,8 @@ try{
       return data;
     });
 
-
+  console.log(results)
+  return;
   const currentTime = new Date();
   const filteredResults = results?.filter(result => {
       const postedTime = new Date(result.posted);

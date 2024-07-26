@@ -13,6 +13,11 @@ async function checkPostRelated(obj) {
     const response = await result.response;
     const text = await response.text();
 
+   obj.logData = {
+    prompt,
+    response: text.trim()
+  };
+
     obj.relevant = text.trim() === 'true';
 }
 

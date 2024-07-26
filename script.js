@@ -85,6 +85,8 @@ try{
     bodyFilteredResults.push(result);
   }
 
+  console.log(bodyFilteredResults);
+
   checkPostsRelated(bodyFilteredResults)
   .then(processedPosts => {
     const aiFilteredResults = processedPosts.filter(data => data.relevant === true);

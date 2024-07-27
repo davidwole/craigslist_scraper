@@ -84,10 +84,12 @@ try{
 
   }
   
+  if(bodyFilteredResults.length > 0) {
+    console.log(bodyFilteredResults);
+  }
+  
   if(bodyFilteredResults.length === 0){
     console.log('No posts found');
-  } else {
-    console.log(bodyFilteredResults);
   }
 
   checkPostsRelated(bodyFilteredResults)

@@ -90,7 +90,7 @@ try{
 
   checkPostsRelated(bodyFilteredResults)
   .then(processedPosts => {
-    console.log(processedPosts)
+    // console.log(processedPosts)
     const aiFilteredResults = processedPosts.filter(data => data.relevant === true);
 
     for (const result of aiFilteredResults) {

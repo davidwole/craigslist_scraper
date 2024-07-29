@@ -21,6 +21,8 @@ const urls = [
   'https://wyoming.craigslist.org/search/boulder-wy/crg?lat=42.7589&lon=-109.2776&search_distance=1000#search=1~list~0~0'
 ];
 
+const currentTime = new Date();
+
 async function scrapeData(url) {
   const browser = await puppeteer.launch({ 
   args: [
@@ -63,7 +65,7 @@ try{
   });
 
 
-  const currentTime = new Date();
+  // const currentTime = new Date();
   const timeElasped = 5; // Number of minutes in the past
   const fromTime = new Date(Date.now() - timeElasped * 60 * 1000);
   const filteredResults = results?.filter(result => {

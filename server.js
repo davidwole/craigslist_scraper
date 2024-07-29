@@ -15,7 +15,7 @@ function handleRootRequest (req, res) {
       scrapeAllData()
         .then(() => console.log('Scraping for all URLs completed'))
         .catch(error => console.error('Error during scraping:', error));
-     }, 1 * 60 * 1000);
+     },  5* 60 * 1000);
     res.end('Scraper started');
 }
 

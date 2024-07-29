@@ -102,7 +102,7 @@ try{
     const recentPosts = aiFilteredResults.filter(post => new Date(post.posted) >= eightMinutesAgo);
 
 
-    for (const result of aiFilteredResults) {
+    for (const result of recentPosts) {
       const mailOptions = {
         from: process.env.EMAIL_USER,
         to: process.env.RECEIVER_EMAIL,

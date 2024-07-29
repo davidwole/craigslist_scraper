@@ -68,7 +68,6 @@ try{
   });
 
 
-  // const currentTime = new Date();
   const filteredResults = results?.filter(result => {
       const postedTime = new Date(result.posted);
       const timeDifference = (currentTime - postedTime) / (1000 * 60); // Difference in minutes

@@ -96,6 +96,11 @@ try{
 
     const aiFilteredResults = filteredResults.filter(data => data.relevant === true);
 
+    const now = new Date();
+    const eightMinutesAgo = new Date(now - 8 * 60 * 1000);
+
+    const recentPosts = aiFilteredResults.filter(post => new Date(post.posted) >= eightMinutesAgo);
+
 
     for (const result of aiFilteredResults) {
       const mailOptions = {

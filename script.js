@@ -95,7 +95,7 @@ try{
     }
   
     if(processedPosts.length === 0){
-      console.log(`No posts found from ${currentTime.toLocaleTimeString()} to ${new Date().toLocaleTimeString()}`);;
+      console.log(`No posts found from ${fromTime.toLocaleTimeString()} to ${currentTime.toLocaleTimeString()}`);;
     }
 
 

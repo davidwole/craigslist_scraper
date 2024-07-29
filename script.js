@@ -67,7 +67,7 @@ try{
 
   // const currentTime = new Date();
   const timeElasped = 5; // Number of minutes in the past
-  const fromTime = new Date(Date.now() - timeElasped * 60 * 1000);
+  const fromTime = currentTime - timeElasped;
   const filteredResults = results?.filter(result => {
       const postedTime = new Date(result.posted);
       const timeDifference = (currentTime - postedTime) / (1000 * 60); // Difference in minutes

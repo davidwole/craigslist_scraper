@@ -22,7 +22,7 @@ const urls = [
 ];
 
 const currentTime = new Date();
-const timeElasped = 5; // Number of minutes in the past
+const timeElasped = 7; // Number of minutes in the past
 const fromTime = new Date(Date.now() - timeElasped * 60 * 1000);
 
 async function scrapeData(url) {

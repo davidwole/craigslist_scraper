@@ -43,9 +43,6 @@ try{
   await page.goto(url, {timeout: 0});
 
   await new Promise(resolve => setTimeout(resolve, 5000));
-  const currentTime = new Date();
-  const timeElasped = 7; // Number of minutes in the past
-  const fromTime = new Date(Date.now() - timeElasped * 60 * 1000);
 
 
   const results = await page.evaluate(() => {
@@ -69,6 +66,9 @@ try{
 
 
   const filteredResults = results?.filter(result => {
+      const currentTime = new Date();
+      const timeElasped = 7; // Number of minutes in the past
+      const fromTime = new Date(Date.now() - timeElasped * 60 * 1000);
       const postedTime = new Date(result.posted);
       const timeDifference = (currentTime - postedTime) / (1000 * 60); // Difference in minutes
 
@@ -95,7 +95,7 @@ try{
     }
   
     if(processedPosts.length === 0){
-      console.log(`No posts found from ${fromTime.toLocaleTimeString()} to ${new Date().toLocaleTimeString()}`);;
+      console.log(`No posts found from ${currentTime.toLocaleTimeString()} to ${new Date().toLocaleTimeString()}`);;
     }
 
 

@@ -11,11 +11,14 @@ const PORT = process.env.PORT || 3000;
 function handleRootRequest (req, res) {
     console.log('Request received at /');
     res.writeHead(200, { 'Content-Type': 'text/plain' });   
-    setInterval(() => {
-      scrapeAllData()
+    // setInterval(() => {
+    //   scrapeAllData()
+    //     .then(() => console.log('Scraping for all URLs completed'))
+    //     .catch(error => console.error('Error during scraping:', error));
+    // }, 1 * 60 * 1000);
+    scrapeAllData()
         .then(() => console.log('Scraping for all URLs completed'))
         .catch(error => console.error('Error during scraping:', error));
-    }, 5 * 60 * 1000);
     res.end('Scraper started');
 }
 

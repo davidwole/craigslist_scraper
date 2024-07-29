@@ -60,18 +60,19 @@ try{
       });
 
       return data;
-    });
+  });
 
 
   const currentTime = new Date();
+  const timeElasped = 5; // Number of minutes in the past
+  const fromTime = new Date(Date.now() - timeElasped * 60 * 1000);
   const filteredResults = results?.filter(result => {
       const postedTime = new Date(result.posted);
       const timeDifference = (currentTime - postedTime) / (1000 * 60); // Difference in minutes
 
-      return timeDifference < 60 * 1; 
+      return timeDifference < timeElasped; 
   });
-  
-  let bodyFilteredResults = [];
+
 
   for(result of filteredResults){
     await page.goto(result?.link, {timeout: 0});
@@ -84,14 +85,19 @@ try{
 
   }
   
-    console.log(bodyFilteredResults);
-  
 
-
-  checkPostsRelated(bodyFilteredResults)
+  checkPostsRelated(filteredResults)
   .then(processedPosts => {
-    // console.log(processedPosts)
-    const aiFilteredResults = processedPosts.filter(data => data.relevant === true);
+    if(processedPosts.length > 0){
+      console.log(processedPosts);
+    }
+  
+    if(processedPosts.length === 0){
+      console.log(`No posts found from ${fromTime.toLocaleTimeString()} to ${new Date().toLocaleTimeString()}`);;
+    }
+
+
+    const aiFilteredResults = filteredResults.filter(data => data.relevant === true);
 
     for (const result of aiFilteredResults) {
       const mailOptions = {

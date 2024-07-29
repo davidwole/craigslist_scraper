@@ -21,7 +21,6 @@ const urls = [
   'https://wyoming.craigslist.org/search/boulder-wy/crg?lat=42.7589&lon=-109.2776&search_distance=1000#search=1~list~0~0'
 ];
 
-
 async function scrapeData(url) {
   const browser = await puppeteer.launch({ 
   args: [
@@ -43,10 +42,6 @@ try{
   await page.goto(url, {timeout: 0});
 
   await new Promise(resolve => setTimeout(resolve, 5000));
-  const currentTime = new Date();
-      const timeElasped = 7; // Number of minutes in the past
-      const fromTime = new Date(Date.now() - timeElasped * 60 * 1000);
-
 
   const results = await page.evaluate(() => {
       const data = [];
@@ -68,15 +63,17 @@ try{
   });
 
 
-  const filteredResults = results?.filter(result => {
-     // const currentTime = new Date();
-   //   const timeElasped = 7; // Number of minutes in the past
-      // const fromTime = new Date(Date.now() - timeElasped * 60 * 1000);
-      const postedTime = new Date(result.posted);
-      const timeDifference = (currentTime - postedTime) / (1000 * 60); // Difference in minutes
+  const currentTime = new Date();
+  const timeElasped = 8; // Number of minutes in the past
+  const fromTime = new Date(Date.now() - timeElasped * 60 * 1000);
+  const filteredResults = results.slice(0, 5);
+  
+  // results?.filter(result => {
+  //     const postedTime = new Date(result.posted);
+  //     const timeDifference = (currentTime - postedTime) / (1000 * 60); // Difference in minutes
 
-      return timeDifference < timeElasped; 
-  });
+  //     return timeDifference < timeElasped; 
+  // });
 
 
   for(result of filteredResults){
@@ -96,13 +93,9 @@ try{
     if(processedPosts.length > 0){
       console.log(processedPosts);
     }
-  
-    if(processedPosts.length === 0){
-      console.log(`No posts found from ${fromTime.toLocaleTimeString()} to ${currentTime.toLocaleTimeString()}`);;
-    }
-
 
     const aiFilteredResults = filteredResults.filter(data => data.relevant === true);
+
 
     for (const result of aiFilteredResults) {
       const mailOptions = {

@@ -87,10 +87,11 @@ try{
 
   }
 
-      const now = new Date();
+    const now = new Date();
     const eightMinutesAgo = new Date(now - 8 * 60 * 1000);
 
     const recentPosts = filteredResults.filter(post => new Date(post.posted) >= eightMinutesAgo);
+    console.log(recentPosts);
   
 
   checkPostsRelated(recentPosts)

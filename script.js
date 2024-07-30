@@ -62,7 +62,7 @@ try{
       return data;
   });
 
-  console.log(results);
+  console.log(results.slice(0, 10));
 
   const currentTime = new Date();
   const timeElasped = 8; // Number of minutes in the past

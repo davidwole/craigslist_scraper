@@ -62,6 +62,7 @@ try{
       return data;
   });
 
+  console.log(results);
 
   const currentTime = new Date();
   const timeElasped = 8; // Number of minutes in the past
@@ -74,7 +75,6 @@ try{
 
   //     return timeDifference < timeElasped; 
   // });
-
 
   for(result of filteredResults){
     await page.goto(result?.link, {timeout: 0});
@@ -91,7 +91,6 @@ try{
     const eightMinutesAgo = new Date(now - 8 * 60 * 1000);
 
     const recentPosts = filteredResults.filter(post => new Date(post.posted) >= eightMinutesAgo);
-    console.log(recentPosts);
   
 
   checkPostsRelated(recentPosts)

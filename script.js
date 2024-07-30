@@ -86,23 +86,24 @@ try{
     result.body = postingBody;
 
   }
+
+      const now = new Date();
+    const eightMinutesAgo = new Date(now - 8 * 60 * 1000);
+
+    const recentPosts = filteredResults.filter(post => new Date(post.posted) >= eightMinutesAgo);
   
 
-  checkPostsRelated(filteredResults)
+  checkPostsRelated(recentPosts)
   .then(processedPosts => {
     if(processedPosts.length > 0){
       console.log(processedPosts);
     }
 
-    const aiFilteredResults = filteredResults.filter(data => data.relevant === true);
-
-    const now = new Date();
-    const eightMinutesAgo = new Date(now - 8 * 60 * 1000);
-
-    const recentPosts = aiFilteredResults.filter(post => new Date(post.posted) >= eightMinutesAgo);
+    const aiFilteredResults = recentPosts.filter(data => data.relevant === true);
+    
 
 
-    for (const result of recentPosts) {
+    for (const result of aiFilteredResults) {
       const mailOptions = {
         from: process.env.EMAIL_USER,
         to: process.env.RECEIVER_EMAIL,

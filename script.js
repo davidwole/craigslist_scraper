@@ -88,10 +88,10 @@ try{
   }
 
     const now = new Date();
-    const eightMinutesAgo = new Date(now - 8 * 60 * 1000);
+    const eightMinutesAgo = new Date(now - 9 * 60 * 1000);
 
     const recentPosts = filteredResults.filter(post => new Date(post.posted) >= eightMinutesAgo);
-  
+
 
   checkPostsRelated(recentPosts)
   .then(processedPosts => {
@@ -101,7 +101,6 @@ try{
 
     const aiFilteredResults = recentPosts.filter(data => data.relevant === true);
     
-
 
     for (const result of aiFilteredResults) {
       const mailOptions = {
@@ -136,11 +135,13 @@ async function scrapeAllData() {
   try {
     for (const url of urls) {
       console.log(`Scraper running for ${url}`);
-      await scrapeData(url); // Wait for scraping to finish before moving on
+      await scrapeData(url); 
     }
   } catch (error) {
     console.error(error);
   }
+
+  setTimeout(scrapeAllData, 5 * 60 * 1000);
 }
 
 

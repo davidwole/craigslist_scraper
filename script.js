@@ -22,6 +22,7 @@ const urls = [
 ];
 
 async function scrapeData(url) {
+  console.log(`Scraper running for ${url} at ${new Date().toLocaleTimeString()}`);
   const browser = await puppeteer.launch({ 
   args: [
     "--disable-setuid-sandbox",
@@ -119,6 +120,8 @@ try{
         console.error('Error during email sending:', error);
       }
     }
+
+    console.log(`Scraper finished for ${url} at ${new Date().toLocaleTimeString()}`);
   })
   .catch(error => {
     console.error('Overall error:', error);

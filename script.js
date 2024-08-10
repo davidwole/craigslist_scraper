@@ -39,10 +39,10 @@ async function scrapeData(url) {
 try{
 
   const page = await browser.newPage();
-    
-  await page.goto(url, {timeout: 0});
 
-  await new Promise(resolve => setTimeout(resolve, 5000));
+  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+
+  await page.waitForSelector('li.cl-search-result');
 
   const results = await page.evaluate(() => {
       const data = [];

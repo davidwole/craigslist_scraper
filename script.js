@@ -69,12 +69,7 @@ try{
   const fromTime = new Date(Date.now() - timeElasped * 60 * 1000);
   const filteredResults = results.slice(0, 5);
   
-  // results?.filter(result => {
-  //     const postedTime = new Date(result.posted);
-  //     const timeDifference = (currentTime - postedTime) / (1000 * 60); // Difference in minutes
-
-  //     return timeDifference < timeElasped; 
-  // });
+  console.log(filteredResults);
 
   for(result of filteredResults){
     await page.goto(result?.link, {timeout: 0});
@@ -120,8 +115,6 @@ try{
         console.error('Error during email sending:', error);
       }
     }
-
-    console.log(`Scraper finished for ${url} at ${new Date().toLocaleTimeString()}`);
   })
   .catch(error => {
     console.error('Overall error:', error);

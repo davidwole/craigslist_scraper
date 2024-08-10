@@ -2,18 +2,15 @@ const puppeteer = require('puppeteer');
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv').config();
 const { timeAgo } = require('./utils/time');
-const { checkPostsRelated } = require('./ai');
-
-// Validate environment variables
-if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS || !process.env.RECEIVER_EMAIL) {
-  throw new Error('Missing required environment variables for email configuration');
-}
+const { 
+  checkPostsRelated
+} = require('./ai');
 
 const transporter = nodemailer.createTransport({
   service: 'yahoo', // Use your email service (e.g., 'gmail', 'outlook', etc.)
   auth: {
-    user: process.env.EMAIL_USER, // Your email address
-    pass: process.env.EMAIL_PASS  // Your email password or app-specific password
+      user: process.env.EMAIL_USER, // Your email address
+      pass: process.env.EMAIL_PASS  // Your email password or app-specific password
   }
 });
 
@@ -25,76 +22,86 @@ const urls = [
 ];
 
 async function scrapeData(url) {
-  const browser = await puppeteer.launch({
-    args: [
-      "--disable-setuid-sandbox",
-      "--no-sandbox",
-      "--single-process",
-      "--no-zygote",
-    ],
-    executablePath:
-      process.env.NODE_ENV === "production"
-        ? process.env.PUPPETEER_EXECUTABLE_PATH
-        : puppeteer.executablePath(),
-  });
+  const browser = await puppeteer.launch({ 
+  args: [
+    "--disable-setuid-sandbox",
+    "--no-sandbox",
+    "--single-process",
+    "--no-zygote",
+  ],
+  executablePath:
+    process.env.NODE_ENV === "production"
+      ? process.env.PUPPETEER_EXECUTABLE_PATH
+      : puppeteer.executablePath(),
+});
 
-  let page;
+try{
 
-  try {
-    page = await browser.newPage();
+  const page = await browser.newPage();
+    
+  await page.goto(url, {timeout: 0});
 
-    await safeGoto(page, url);
+  await new Promise(resolve => setTimeout(resolve, 5000));
 
-    // Wait for the results to load
-    await page.waitForSelector('li.cl-search-result');
-
-    const results = await page.evaluate(() => {
+  const results = await page.evaluate(() => {
       const data = [];
-      document.querySelectorAll('li.cl-search-result').forEach(element => {
-        const title = element.getAttribute('title') || 'No Title';
-        const link = element.querySelector('a.cl-app-anchor')?.getAttribute('href') || 'No Link';
-        const postedHTML = element.querySelector('.meta')?.innerHTML || '';
-        const posted = postedHTML.slice(13, 74).trim() || 'Unknown Date';
 
-        data.push({
-          title,
-          link,
-          posted
-        });
+      document.querySelectorAll('li.cl-search-result').forEach(element => {
+          const title = element.getAttribute('title');
+          const link = element.querySelector('a.cl-app-anchor')?.getAttribute('href');
+          const postedHTML = element.querySelector('.meta')?.innerHTML;
+          const posted = postedHTML.slice(13, 74);
+
+          data.push({
+              title,
+              link,
+              posted
+          });
       });
 
       return data;
+  });
+
+
+  const currentTime = new Date();
+  const timeElasped = 8; // Number of minutes in the past
+  const fromTime = new Date(Date.now() - timeElasped * 60 * 1000);
+  const filteredResults = results.slice(0, 5);
+  
+  // results?.filter(result => {
+  //     const postedTime = new Date(result.posted);
+  //     const timeDifference = (currentTime - postedTime) / (1000 * 60); // Difference in minutes
+
+  //     return timeDifference < timeElasped; 
+  // });
+
+  for(result of filteredResults){
+    await page.goto(result?.link, {timeout: 0});
+
+    const postingBody = await page.evaluate(() => {
+      return document.querySelector('#postingbody')?.innerText;
     });
 
-    const filteredResults = results.slice(0, 5);
+    result.body = postingBody;
 
-    for (const result of filteredResults) {
-      if (result.link !== 'No Link') {
-        await safeGoto(page, result.link);
-
-        const postingBody = await page.evaluate(() => {
-          return document.querySelector('#postingbody')?.innerText || 'No description available';
-        });
-
-        result.body = postingBody;
-      } else {
-        result.body = 'No description available';
-      }
-    }
+  }
 
     const now = new Date();
-    const eightMinutesAgo = new Date(now - 8 * 60 * 1000);
+    const eightMinutesAgo = new Date(now - 9 * 60 * 1000);
 
     const recentPosts = filteredResults.filter(post => new Date(post.posted) >= eightMinutesAgo);
 
     console.log(recentPosts);
 
-    const processedPosts = await checkPostsRelated(recentPosts);
-    if (processedPosts.length > 0) {
+
+  checkPostsRelated(recentPosts)
+  .then(processedPosts => {
+    if(processedPosts.length > 0){
       console.log(processedPosts);
     }
 
-    const aiFilteredResults = processedPosts.filter(data => data.relevant === true);
+    const aiFilteredResults = recentPosts.filter(data => data.relevant === true);
+    
 
     for (const result of aiFilteredResults) {
       const mailOptions = {
@@ -104,42 +111,27 @@ async function scrapeData(url) {
         text: `Title: ${result.title}\n\nDescription: \n${result.body}\n\nPosted ${timeAgo(result.posted)}\n\n${result.link}`
       };
 
-      await sendEmail(mailOptions);
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Add delay between emails
+      try {
+        transporter.sendMail(mailOptions)
+          .then(() => console.log(`Email sent: ${result.title}`))
+          .catch(error => console.error(`Error sending email for ${result.title}:`, error));
+      } catch (error) {
+        console.error('Error during email sending:', error);
+      }
     }
+  })
+  .catch(error => {
+    console.error('Overall error:', error);
+  });
 
-  } catch (error) {
-    console.error('Error scraping data:', error);
-  } finally {
-    await page?.close();
-    await browser.close();
-  }
+} catch(error){
+  console.error(error)
+} finally {
+  await browser?.close();
 }
 
-// Function to safely navigate to a URL with retries
-async function safeGoto(page, url, retries = 3) {
-  for (let i = 0; i < retries; i++) {
-    try {
-      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
-      return;
-    } catch (error) {
-      console.error(`Failed to load ${url}, retrying... (${i + 1}/${retries})`);
-      if (i === retries - 1) throw error;
-    }
-  }
-}
+} 
 
-// Function to send an email
-async function sendEmail(mailOptions) {
-  try {
-    await transporter.sendMail(mailOptions);
-    console.log(`Email sent: ${mailOptions.subject}`);
-  } catch (error) {
-    console.error(`Error sending email for ${mailOptions.subject}:`, error);
-  }
-}
-
-// Function to scrape all URLs concurrently
 async function scrapeAllData() {
   try {
     await Promise.all(urls.map(url => scrapeData(url)));
@@ -150,7 +142,9 @@ async function scrapeAllData() {
   setTimeout(scrapeAllData, 5 * 60 * 1000); // Re-run after 5 minutes
 }
 
+
 module.exports = {
   urls,
   scrapeAllData
 }
+

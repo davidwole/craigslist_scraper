@@ -140,6 +140,7 @@ async function scrapeAllData() {
 
 module.exports = {
   urls,
-  scrapeAllData
+  scrapeAllData,
+  scrapeData
 }
 

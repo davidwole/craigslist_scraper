@@ -40,21 +40,8 @@ try{
 
   const page = await browser.newPage();
 
-   // Event listener for unexpected page closures
-    page.on('close', () => {
-      console.error(`Page for ${url} was closed unexpectedly.`);
-    });
-
-    // Navigate to the URL and check the response status
-    const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 120000 });
-    if (!response || response.status() !== 200) {
-      console.error(`Failed to load ${url}, status: ${response ? response.status() : 'unknown'}`);
-      await browser.close();
-      return;
-    }
-
-    // Wait for the selector
-    await page.waitForSelector('li.cl-search-result', { timeout: 120000 });
+  await page.goto(url, {timeout: 0});
+  await new Promise(resolve => setTimeout(resolve, 5000));
 
   const results = await page.evaluate(() => {
       const data = [];

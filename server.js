@@ -2,7 +2,8 @@
 const http = require('http');
 const {
     urls,
-    scrapeAllData
+    scrapeAllData,
+    scrapeData
 
 } = require('./script')
 // Define the port to listen on

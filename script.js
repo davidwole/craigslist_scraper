@@ -41,7 +41,7 @@ try{
   const page = await browser.newPage();
 
   await page.goto(url, {timeout: 0});
-  await new Promise(resolve => setTimeout(resolve, 5000));
+  await new Promise(resolve => setTimeout(resolve, 10000));
 
   const results = await page.evaluate(() => {
       const data = [];

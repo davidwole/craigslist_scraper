@@ -42,7 +42,7 @@ try{
 
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 6000000 });
 
-  await page.waitForSelector('li.cl-search-result', { timeout: 1000000 });
+  await page.waitForSelector('li.cl-search-result', { timeout: 120000 });
 
   const results = await page.evaluate(() => {
       const data = [];

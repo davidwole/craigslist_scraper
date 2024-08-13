@@ -40,9 +40,9 @@ try{
 
   const page = await browser.newPage();
 
-  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 6000000 });
 
-  await page.waitForSelector('li.cl-search-result');
+  await page.waitForSelector('li.cl-search-result', { timeout: 1000000 });
 
   const results = await page.evaluate(() => {
       const data = [];

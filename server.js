@@ -12,10 +12,7 @@ const PORT = process.env.PORT || 3000;
 function handleRootRequest (req, res) {
     console.log('Request received at /');
     res.writeHead(200, { 'Content-Type': 'text/plain' });   
-    scrapeData(urls[0]);
-    scrapeData(urls[1]);
-    scrapeData(urls[2]);
-    scrapeData(urls[3]);
+    scrapeAllData();
     res.end('Scraper started');
 }
 

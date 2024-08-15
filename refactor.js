@@ -69,8 +69,7 @@ async function scrapeUrl(urlObj, maxRetries = 3) {
       }
 
       const now = new Date();
-      const hour = 60 * 3
-      const downTime = new Date(now - hour * 60 * 1000);
+      const downTime = new Date(now - 12 * 60 * 1000);
 
       const recentPosts = filteredResults.filter(post => new Date(post.posted) >= downTime);
 
@@ -78,12 +77,16 @@ async function scrapeUrl(urlObj, maxRetries = 3) {
 
       checkPostsRelated(recentPosts)
       .then(processedPosts => {
-        console.log(`Found ${processedPosts.length} after processing for ${urlObj.name}`);
+        console.log(`Processing ${processedPosts.length} posts for ${urlObj.name}`);
         if(processedPosts.length > 0){
           console.log(processedPosts);
         }
     
         const aiFilteredResults = recentPosts.filter(data => data.relevant === true);
+
+        if(aiFilteredResults > 0){
+          console.log(`Found ${aiFilteredResults.length} after processing for ${urlObj.name}`);
+        }
         
     
         for (const result of aiFilteredResults) {
@@ -127,7 +130,20 @@ async function scrapeAllUrls(urls) {
   await Promise.all(scrapePromises);
 }
 
+function startScraping(urls) {
+  scrapeAllUrls(urls)
+    .then(() => {
+      console.log(`Waiting 5 minutes before next scrape...`);
+      setTimeout(() => startScraping(urls), 5 * 60 * 1000);
+    })
+    .catch(error => {
+      console.error('Error in scraping process:', error);
+      console.log(`Waiting 5 minutes before retrying...`);
+      setTimeout(() => startScraping(urls), 5 * 60 * 1000);
+    });
+}
+
+
 module.exports = {
-  scrapeUrl,
-  scrapeAllUrls
+  startScraping
 };

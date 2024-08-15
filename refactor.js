@@ -69,7 +69,7 @@ async function scrapeUrl(urlObj, maxRetries = 3) {
       }
 
       const now = new Date();
-      const downTime = new Date(now - 12 * 60 * 1000);
+      const downTime = new Date(now - 15 * 60 * 1000);
 
       const recentPosts = filteredResults.filter(post => new Date(post.posted) >= downTime);
 
@@ -130,20 +130,7 @@ async function scrapeAllUrls(urls) {
   await Promise.all(scrapePromises);
 }
 
-function startScraping(urls) {
-  scrapeAllUrls(urls)
-    .then(() => {
-      console.log(`Waiting 5 minutes before next scrape...`);
-      setTimeout(() => startScraping(urls), 5 * 60 * 1000);
-    })
-    .catch(error => {
-      console.error('Error in scraping process:', error);
-      console.log(`Waiting 5 minutes before retrying...`);
-      setTimeout(() => startScraping(urls), 5 * 60 * 1000);
-    });
-}
-
 
 module.exports = {
-  startScraping
+  scrapeAllUrls
 };

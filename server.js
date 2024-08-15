@@ -6,7 +6,7 @@ const {
     scrapeData,
 
 } = require('./script')
-const { startScraping } = require('./refactor');
+const { scrapeAllUrls } = require('./refactor');
 
 // Define the port to listen on
 const PORT = process.env.PORT || 3000;
@@ -14,7 +14,9 @@ const PORT = process.env.PORT || 3000;
 function handleRootRequest (req, res) {
     console.log('Request received at /');
     res.writeHead(200, { 'Content-Type': 'text/plain' });   
-    startScraping(urls);
+    setInterval(() => {
+      scrapeAllUrls(urls);
+  }, 7 * 60 * 1000);  
     res.end('Scraper started');
 }
 

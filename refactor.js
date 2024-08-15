@@ -1,4 +1,18 @@
 const puppeteer = require('puppeteer');
+const nodemailer = require('nodemailer');
+const dotenv = require('dotenv').config();
+const { timeAgo } = require('./utils/time');
+const { 
+  checkPostsRelated
+} = require('./ai');
+
+const transporter = nodemailer.createTransport({
+  service: 'yahoo', 
+  auth: {
+      user: process.env.EMAIL_USER, 
+      pass: process.env.EMAIL_PASS  
+  }
+});
 
 async function scrapeUrl(urlObj, maxRetries = 3) {
   console.log(`Scraper running at ${new Date().toLocaleTimeString()} for URL: ${urlObj.name}`);
@@ -61,7 +75,34 @@ async function scrapeUrl(urlObj, maxRetries = 3) {
       const recentPosts = filteredResults.filter(post => new Date(post.posted) >= downTime);
 
       console.log(`Found ${recentPosts.length} posts at ${new Date().toLocaleTimeString()} for ${urlObj.name}`);
-      console.log(recentPosts);
+
+      checkPostsRelated(recentPosts)
+      .then(processedPosts => {
+        console.log(`Found ${processedPosts.length} after processing for ${urlObj.name}`);
+        if(processedPosts.length > 0){
+          console.log(processedPosts);
+        }
+    
+        const aiFilteredResults = recentPosts.filter(data => data.relevant === true);
+        
+    
+        for (const result of aiFilteredResults) {
+          const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: process.env.RECEIVER_EMAIL,
+            subject: `Lead found: ${result.title}`,
+            text: `Title: ${result.title}\n\nDescription: \n${result.body}\n\nPosted ${timeAgo(result.posted)}\n\n${result.link}`
+          };
+    
+          try {
+            transporter.sendMail(mailOptions)
+              .then(() => console.log(`Email sent: ${result.title}`))
+              .catch(error => console.error(`Error sending email for ${result.title}:`, error));
+          } catch (error) {
+            console.error('Error during email sending:', error);
+          }
+        }
+      })
 
       break; // Exit loop if successful
 

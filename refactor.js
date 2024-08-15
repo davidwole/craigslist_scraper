@@ -130,7 +130,18 @@ async function scrapeAllUrls(urls) {
   await Promise.all(scrapePromises);
 }
 
+async function runScraper(urls) { // New function
+  while (true) { // New loop
+    console.log('Starting scraper cycle...'); // New log
+    await scrapeAllUrls(urls); // Calls the original scrape function
+    console.log('Scraper cycle finished. Waiting for 5 minutes...'); // New log
+    await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000)); // 5 minutes delay - New addition
+  }
+}
+
+
 
 module.exports = {
-  scrapeAllUrls
+  scrapeAllUrls,
+  runScraper
 };

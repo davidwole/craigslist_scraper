@@ -3,7 +3,8 @@ const http = require('http');
 const {
     urls,
     scrapeAllData,
-    scrapeData
+    scrapeData,
+    scrapeUrl
 
 } = require('./script')
 // Define the port to listen on
@@ -12,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 function handleRootRequest (req, res) {
     console.log('Request received at /');
     res.writeHead(200, { 'Content-Type': 'text/plain' });   
-    scrapeAllData();
+    scrapeUrl();
     res.end('Scraper started');
 }
 

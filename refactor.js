@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 
 async function scrapeUrl(){
+  console.log(`Scraper running at ${new Date().toLocaleTimeString()}`);
   const browser = await puppeteer.launch({ 
   headless: true,  
   args: [
@@ -44,6 +45,7 @@ async function scrapeUrl(){
   console.log(results.slice(0, 5));
 
   await browser.close();
+  console.log(`Scraper finished at ${new Date().toLocaleTimeString()}`);
 });
 
 module.exports = {

@@ -40,12 +40,34 @@ async function scrapeUrl(urlObj, maxRetries = 3) {
         return data;
       });
 
-      console.log(results.slice(0, 5));
+      const filteredResults = results.slice(0, 5);
+    
+
+      for(result of filteredResults){
+        await page.goto(result?.link, {timeout: 0});
+
+        const postingBody = await page.evaluate(() => {
+          return document.querySelector('#postingbody')?.innerText;
+        });
+
+        result.body = postingBody;
+
+      }
+
+      const now = new Date();
+      const hour = 60 * 3
+      const downTime = new Date(now - hour * 60 * 1000);
+
+      const recentPosts = filteredResults.filter(post => new Date(post.posted) >= downTime);
+
+      console.log(`Found ${recentPosts.length} posts at ${new Date().toLocaleTimeString()} for ${urlObj.name}`);
+      console.log(recentPosts);
+
       break; // Exit loop if successful
 
     } catch (error) {
       attempt++;
-      console.error(`Attempt ${attempt} failed for ${urlObj.name}:`, error);
+      console.error(`Attempt ${attempt} failed for ${urlObj.name}:`, error.message);
       if (attempt >= maxRetries) {
         console.error(`Max retries reached for ${urlObj.name}. Skipping...`);
       }

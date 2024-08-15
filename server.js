@@ -7,6 +7,8 @@ const {
     scrapeUrl
 
 } = require('./script')
+const { scrapeUrl } = require('./refactor');
+
 // Define the port to listen on
 const PORT = process.env.PORT || 3000;
 // Define your function to be called

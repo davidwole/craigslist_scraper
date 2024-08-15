@@ -72,8 +72,9 @@ async function scrapeAllUrls(urls) {
   await Promise.all(scrapePromises);
 }
 
-scrapeAllUrls(urls);
+scrapeAllUrls
 
 module.exports = {
-  scrapeUrl
+  scrapeUrl,
+  scrapeAllUrls
 };

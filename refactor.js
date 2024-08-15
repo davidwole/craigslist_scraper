@@ -76,7 +76,6 @@ async function scrapeAllUrls(urls) {
   await Promise.all(scrapePromises);
 }
 
-scrapeAllUrls
 
 module.exports = {
   scrapeUrl,

@@ -1,7 +1,14 @@
 const puppeteer = require('puppeteer');
 
-async function scrapeUrl() {
-  console.log(`Scraper running at ${new Date().toLocaleTimeString()}`);
+const urls = [
+  'https://newjersey.craigslist.org/search/paterson-nj/cpg?lat=40.91&lon=-74.174&search_distance=1000#search=1~list~0~0',
+  'https://wyoming.craigslist.org/search/boulder-wy/cpg?lat=42.7589&lon=-109.2776&search_distance=1000#search=1~list~0~0',
+  'https://newjersey.craigslist.org/search/paterson-nj/crg?lat=40.91&lon=-74.174&search_distance=1000#search=1~list~0~0',
+  'https://wyoming.craigslist.org/search/boulder-wy/crg?lat=42.7589&lon=-109.2776&search_distance=1000#search=1~list~0~0'
+];
+
+async function scrapeUrl(url) {
+  console.log(`Scraper running at ${new Date().toLocaleTimeString()} for URL: ${url}`);
   
   let browser;
   
@@ -22,7 +29,7 @@ async function scrapeUrl() {
     
     const page = await browser.newPage();
     
-    await page.goto('https://newjersey.craigslist.org/search/paterson-nj/cpg?lat=40.91&lon=-74.174&search_distance=1000#search=1~list~0~0', { timeout: 0 });
+    await page.goto(url, { timeout: 0 });
 
     // Wait for the list items to load
     await page.waitForSelector('li.cl-search-result', { timeout: 0 });
@@ -55,9 +62,17 @@ async function scrapeUrl() {
     if (browser) {
       await browser.close();
     }
-    console.log(`Scraper finished at ${new Date().toLocaleTimeString()}`);
+    console.log(`Scraper finished at ${new Date().toLocaleTimeString()} for URL: ${url}`);
   }
 }
+
+
+async function scrapeAllUrls(urls) {
+  const scrapePromises = urls.map(url => scrapeUrl(url));
+  await Promise.all(scrapePromises);
+}
+
+scrapeAllUrls(urls);
 
 module.exports = {
   scrapeUrl

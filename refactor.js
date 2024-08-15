@@ -44,4 +44,8 @@ async function scrapeUrl(){
   console.log(results.slice(0, 5));
 
   await browser.close();
-})();
+});
+
+module.exports = {
+  scrapeUrl
+};

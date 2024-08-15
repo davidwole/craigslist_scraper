@@ -1,7 +1,19 @@
 const puppeteer = require('puppeteer');
 
 async function scrapeUrl(){
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({ 
+  headless: true,  
+  args: [
+    "--disable-setuid-sandbox",
+    "--no-sandbox",
+    "--single-process",
+    "--no-zygote",
+  ],
+  executablePath:
+    process.env.NODE_ENV === "production"
+      ? process.env.PUPPETEER_EXECUTABLE_PATH
+      : puppeteer.executablePath(), 
+  });
   const page = await browser.newPage();
 
   await page.goto('https://newjersey.craigslist.org/search/paterson-nj/cpg?lat=40.91&lon=-74.174&search_distance=1000#search=1~list~0~0', { timeout: 0 });

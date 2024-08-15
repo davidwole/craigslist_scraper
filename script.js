@@ -14,12 +14,23 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-const urls = [
-  'https://newjersey.craigslist.org/search/paterson-nj/cpg?lat=40.91&lon=-74.174&search_distance=1000#search=1~list~0~0',
-  'https://wyoming.craigslist.org/search/boulder-wy/cpg?lat=42.7589&lon=-109.2776&search_distance=1000#search=1~list~0~0',
-  'https://newjersey.craigslist.org/search/paterson-nj/crg?lat=40.91&lon=-74.174&search_distance=1000#search=1~list~0~0',
-  'https://wyoming.craigslist.org/search/boulder-wy/crg?lat=42.7589&lon=-109.2776&search_distance=1000#search=1~list~0~0'
-];
+const urls = [{
+  name: 'East Coast Computer',
+  link: 'https://newjersey.craigslist.org/search/paterson-nj/cpg?lat=40.91&lon=-74.174&search_distance=1000#search=1~list~0~0'
+},
+{
+  name: 'West Coast Computer',
+  link: 'https://wyoming.craigslist.org/search/boulder-wy/cpg?lat=42.7589&lon=-109.2776&search_distance=1000#search=1~list~0~0'
+},
+{
+  name: 'East Coast Creative',
+  link: 'https://newjersey.craigslist.org/search/paterson-nj/crg?lat=40.91&lon=-74.174&search_distance=1000#search=1~list~0~0'
+},
+{
+  name: 'West Coast Creative',
+  link: 'https://wyoming.craigslist.org/search/boulder-wy/crg?lat=42.7589&lon=-109.2776&search_distance=1000#search=1~list~0~0'
+}]
+
 
 async function scrapeData(url) {
   console.log(`Scraper running for ${url} at ${new Date().toLocaleTimeString()}`);
@@ -64,8 +75,8 @@ try{
 
 
   const currentTime = new Date();
-  const timeElasped = 8; // Number of minutes in the past
   const fromTime = new Date(Date.now() - timeElasped * 60 * 1000);
+  const timeElasped = 8; // Number of minutes in the past
   const filteredResults = results.slice(0, 5);
   
   console.log(filteredResults);

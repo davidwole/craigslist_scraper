@@ -4,7 +4,6 @@ const {
     urls,
     scrapeAllData,
     scrapeData,
-    scrapeUrl
 
 } = require('./script')
 const { scrapeUrl } = require('./refactor');

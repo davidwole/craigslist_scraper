@@ -31,10 +31,8 @@ async function scrapeUrl(url) {
     
     await page.goto(url, { timeout: 0 });
 
-    // Wait for the list items to load
     await page.waitForSelector('li.cl-search-result', { timeout: 0 });
 
-    // Get the element's text content
     const results = await page.evaluate(() => {
       const data = [];
 
@@ -54,7 +52,13 @@ async function scrapeUrl(url) {
       return data;
     });
 
-    console.log(results.slice(0, 5));
+    const now = new Date();
+    const downTime = new Date(now - 6 * 60 * 60 * 1000);
+
+    const filteredResults = results.filter(post => new Date(post.posted) >= downTime);
+
+    console.log(filteredResults);
+  
     
   } catch (error) {
     console.error('Error occurred during scraping:', error);

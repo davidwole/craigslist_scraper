@@ -32,5 +32,5 @@ const server = http.createServer((req, res) => {
 
 // Start the server
 server.listen(PORT, () => {
-    console.log(`Server is running on Port: ${PORT}`);
+    console.log(`Server is running on Port: ${process.env.NODE_ENV == 'production' ? PORT : `http://localhost:${PORT}`}`);
 });

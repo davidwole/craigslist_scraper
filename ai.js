@@ -7,7 +7,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
 
 
 async function checkPostRelated(obj) {
-  const prompt = `Does the following post state that it is looking for a freelance web designer, web developer, graphic designer, or 3D artist? If yes, reply "true"; if not, reply "false": ${obj.body}`;
+  const prompt = `Does the following post state that it is looking for a freelance web designer, web developer, graphic designer, or 3D artist? If yes, reply "true"; if not, reply "false": ${obj.name} ${obj.body}`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;

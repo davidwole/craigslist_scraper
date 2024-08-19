@@ -58,13 +58,31 @@ async function scrapeUrl(urlObj, maxRetries = 3) {
     
 
       for(result of filteredResults){
-        await page.goto(result?.link, {timeout: 0});
+        let postingBody;
+        let retryCount = 0;
 
-        const postingBody = await page.evaluate(() => {
-          return document.querySelector('#postingbody')?.innerText;
-        });
+        while (retryCount < maxRetries) {
+          try {
+            await page.goto(result?.link, { timeout: 0 });
+            await page.waitForSelector('#postingbody', { timeout: 0 });
+            
+            postingBody = await page.evaluate(() => {
+              return document.querySelector('#postingbody')?.innerText;
+            });
+
+            if (postingBody) break; // Exit retry loop if successful
+          } catch (error) {
+            retryCount++;
+            console.error(`Retry ${retryCount} for #postingbody on ${result.title} failed.`);
+            if (retryCount >= maxRetries) {
+              console.error(`Max retries reached for #postingbody on ${result.title}. Skipping this post.`);
+              break;
+            }
+          }
+        }
 
         result.body = postingBody;
+      }
 
       }
 

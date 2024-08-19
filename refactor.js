@@ -2,9 +2,7 @@ const puppeteer = require('puppeteer');
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv').config();
 const { timeAgo } = require('./utils/time');
-const { 
-  checkPostsRelated
-} = require('./ai');
+const { checkPostsRelated } = require('./ai');
 
 const transporter = nodemailer.createTransport({
   service: 'yahoo', 
@@ -55,16 +53,15 @@ async function scrapeUrl(urlObj, maxRetries = 3) {
       });
 
       const filteredResults = results.slice(0, 5);
-    
 
-      for(result of filteredResults){
+      for (const result of filteredResults) {
         let postingBody;
         let retryCount = 0;
 
         while (retryCount < maxRetries) {
           try {
             await page.goto(result?.link, { timeout: 0 });
-            await page.waitForSelector('#postingbody', { timeout: 0 });
+            await page.waitForSelector('#postingbody', { timeout: 0 }); // Shorter timeout for retries
             
             postingBody = await page.evaluate(() => {
               return document.querySelector('#postingbody')?.innerText;
@@ -82,8 +79,6 @@ async function scrapeUrl(urlObj, maxRetries = 3) {
         }
 
         result.body = postingBody;
-      }
-
       }
 
       const now = new Date();
@@ -106,7 +101,6 @@ async function scrapeUrl(urlObj, maxRetries = 3) {
           console.log(`Found ${aiFilteredResults.length} after processing for ${urlObj.name}`);
         }
         
-    
         for (const result of aiFilteredResults) {
           const mailOptions = {
             from: process.env.EMAIL_USER,
@@ -148,16 +142,14 @@ async function scrapeAllUrls(urls) {
   await Promise.all(scrapePromises);
 }
 
-async function runScraper(urls) { // New function
-  while (true) { // New loop
-    console.log('Starting scraper cycle...'); // New log
-    await scrapeAllUrls(urls); // Calls the original scrape function
-    console.log('Scraper cycle finished. Waiting for 5 minutes...'); // New log
-    await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000)); // 5 minutes delay - New addition
+async function runScraper(urls) { 
+  while (true) { 
+    console.log('Starting scraper cycle...'); 
+    await scrapeAllUrls(urls); 
+    console.log('Scraper cycle finished. Waiting for 5 minutes...'); 
+    await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000)); 
   }
 }
-
-
 
 module.exports = {
   scrapeAllUrls,
